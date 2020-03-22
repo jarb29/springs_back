@@ -36,8 +36,8 @@ class Tienda(db.Model):
     direccion = db.Column(db.String(100), nullable = False, unique=True)
     clave = db.Column(db.String(100), nullable = False, unique=True)
     usuario_id = db.Column(db.Integer, db.ForeignKey('Usuario.id'))
-    tienda = db.relationship('Productos', backref= 'productos', lazy = True)
-    tiendaCategory = db.relationship('CategoriaTienda',  backref= 'categoria', lazy = True)
+    productos = db.relationship('Productos', backref= 'productos', lazy = True)
+    tienda_id = db.Column(db.Integer, db.ForeignKey('CategoriaTienda.id'))
 
 class Productos(db.Model):
     __tablename__ = 'Productos'
@@ -48,7 +48,8 @@ class Productos(db.Model):
     precio = db.Column(db.String(100), nullable = False, unique=True)
     clave = db.Column(db.String(100), nullable = False, unique=True)
     tienda_id = db.Column(db.Integer, db.ForeignKey('Tienda.id'))
-    producto = db.relationship('CategoriaProductos', backref= 'CategoryProduc', lazy = True) 
+    producto_id = db.Column(db.Integer, db.ForeignKey('CategoriaProductos.id'))
+     
 
 
 
@@ -56,7 +57,7 @@ class CategoriaProductos(db.Model):
     __tablename__ = 'CategoriaProductos'
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(100), nullable = False, unique=True)
-    producto_id = db.Column(db.Integer, db.ForeignKey('Productos.id'))
+    producto = db.relationship('Productos', backref= 'CategoryProduc', lazy = True)
     
 
 
@@ -64,7 +65,8 @@ class CategoriaTienda(db.Model):
     __tablename__ = 'CategoriaTienda'
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(100), nullable = False, unique=True)
-    tienda_id = db.Column(db.Integer, db.ForeignKey('Tienda.id'))
+    tiendaCategory = db.relationship('Tienda',  backref= 'categoria', lazy = True)
+    
     
 
 
