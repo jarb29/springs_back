@@ -5,13 +5,15 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 from flask_sqlalchemy import SQLAlchemy
+from flask import Flask
 
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+db = SQLAlchemy(app)
 
-
-db = SQLAlchemy()
 
 class Usuario(db.Model):
-    __tablename__ = 'usuario'
+    __tablename__ = 'Usuario'
     id = db.Column(db.Integer, primary_key = True)
     nombre = db.Column(db.String(100), nullable = False, unique=True)
     apellido = db.Column(db.String(100), nullable = False, unique=True)
@@ -20,70 +22,75 @@ class Usuario(db.Model):
     nombre = db.Column(db.String(100), nullable = False, unique=True)
     telefono = db.Column(db.String(100), nullable = False)
     clave = db.Column(db.String(100), nullable = True)
+    usuario = db.relationship('Tienda', backref= 'tienda', lazy = True)
+    usuarioFactura = db.relationship('Factura',  backref= 'factura', lazy = True)
+
 
 
 class Tienda(db.Model):
     __tablename__ = 'Tienda'
-    tienda_id = Column(Integer, primary_key=True)
+    id = Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable = False, unique=True)
     rut = db.Column(db.String(100), nullable = False, unique=True)
     email = db.Column(db.String(100), nullable = False, unique=True)
     direccion = db.Column(db.String(100), nullable = False, unique=True)
     clave = db.Column(db.String(100), nullable = False, unique=True)
-    usuario_id = db.Column(Integer, ForeignKey('usuario.id'))
-    usuario = db.relationship(Usuario)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('Usuario.id'))
+    tienda = db.relationship('Productos', backref= 'productos', lazy = True)
+    tiendaCategory = db.relationship('CategoriaTienda',  backref= 'categoria', lazy = True)
 
 class Productos(db.Model):
     __tablename__ = 'Productos'
-    producto_id = db.Column(Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable = False, unique=True)
     foto = db.Column(db.String(100), nullable = False, unique=True)
     stock = db.Column(db.String(100), nullable = False, unique=True)
     precio = db.Column(db.String(100), nullable = False, unique=True)
     clave = db.Column(db.String(100), nullable = False, unique=True)
-    tienda_id = db.Column(Integer, ForeignKey('tienda.id'))
-    tienda = db.relationship(Tienda)
+    tienda_id = db.Column(db.Integer, db.ForeignKey('Tienda.id'))
+    producto = db.relationship('CategoriaProductos', backref= 'CategoryProduc', lazy = True) 
 
 
 
 class CategoriaProductos(db.Model):
     __tablename__ = 'CategoriaProductos'
-    categoriaProducto_id = db.Column(Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(100), nullable = False, unique=True)
-    producto_id = db.Column(Integer, ForeignKey('producto.id'))
-    producto = db.relationship(Productos)
+    producto_id = db.Column(db.Integer, db.ForeignKey('Productos.id'))
+    
 
 
 class CategoriaTienda(db.Model):
     __tablename__ = 'CategoriaTienda'
-    categoriaTienda_id = db.Column(Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(100), nullable = False, unique=True)
-    tienda_id = db.Column(Integer, ForeignKey('tienda.id'))
-    tienda = db.relationship(Tienda)
+    tienda_id = db.Column(db.Integer, db.ForeignKey('Tienda.id'))
+    
 
 
 
 
 class Factura(db.Model):
     __tablename__ = 'Factura'
-    factura_id = db.Column(Integer, primary_key=True)
-    usuario_id = db.Column(Integer, ForeignKey('usuario.id'))
-    usuario = db.relationship(Usuario)
+    id = db.Column(db.Integer, primary_key=True)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('Usuario.id'))
+    factura = db.relationship('Detallefactura',  backref= 'detalle', lazy = True)
+    
 
 
 class Detallefactura(db.Model):
     __tablename__ = 'DetalleFactura'
-    Deatallefactura_id = db.Column(Integer, primary_key=True)
-    factura_id = db.Column(Integer, ForeignKey('factura.id '))
-    factura = db.relationship(Factura)
+    id = db.Column(db.Integer, primary_key=True)
+    factura_id = db.Column(db.Integer, db.ForeignKey('Factura.id'))
+    
     
 
-    def serialize(self):
+'''  def serialize(self):
         return {
             "id": self.id,
             "username": self.username,
             "name": self.name,
             "email": self.email
 
-        }
+        }'''
 
