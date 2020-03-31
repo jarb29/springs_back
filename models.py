@@ -13,7 +13,7 @@ db = SQLAlchemy(app)
 
 
 class Usuario(db.Model):
-    __tablename__ = 'Usuario'
+    __tablename__ = 'usuario'
     id = db.Column(db.Integer, primary_key = True)
     nombre = db.Column(db.String(100), nullable = False, unique=True)
     apellido = db.Column(db.String(100), nullable = False, unique=True)
@@ -42,7 +42,7 @@ class Usuario(db.Model):
 
 
 class Tienda(db.Model):
-    __tablename__ = 'Tienda'
+    __tablename__ = 'tienda'
     id = Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable = False, unique=True)
     rut = db.Column(db.String(100), nullable = False, unique=True)
@@ -73,7 +73,7 @@ class Tienda(db.Model):
 
 
 class Productos(db.Model):
-    __tablename__ = 'Productos'
+    __tablename__ = 'productos'
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable = False, unique=True)
     foto = db.Column(db.String(100), nullable = False, unique=True)
@@ -99,7 +99,7 @@ class Productos(db.Model):
 
 
 class CategoriaProductos(db.Model):
-    __tablename__ = 'CategoriaProductos'
+    __tablename__ = 'categoriaProductos'
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(100), nullable = False, unique=True)
     producto = db.relationship('Productos', backref= 'CategoryProduc', lazy = True)
@@ -117,7 +117,7 @@ class CategoriaProductos(db.Model):
 
 
 class CategoriaTienda(db.Model):
-    __tablename__ = 'CategoriaTienda'
+    __tablename__ = 'categoriaTienda'
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(100), nullable = False, unique=True)
     tiendaCategory = db.relationship('Tienda',  backref= 'categoria', lazy = True)
@@ -136,7 +136,7 @@ class CategoriaTienda(db.Model):
 
 
 class Factura(db.Model):
-    __tablename__ = 'Factura'
+    __tablename__ = 'factura'
     id = db.Column(db.Integer, primary_key=True)
     usuario_id = db.Column(db.Integer, db.ForeignKey('Usuario.id'))
     factura = db.relationship('Detallefactura',  backref= 'detalle', lazy = True)
@@ -153,7 +153,7 @@ class Factura(db.Model):
 
 
 class Detallefactura(db.Model):
-    __tablename__ = 'DetalleFactura'
+    __tablename__ = 'detallefactura'
     id = db.Column(db.Integer, primary_key=True)
     factura_id = db.Column(db.Integer, db.ForeignKey('Factura.id'))
 
