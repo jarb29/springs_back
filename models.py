@@ -24,7 +24,7 @@ class Usuario(db.Model):
     clave = db.Column(db.String(100), nullable = True)
     usuario = db.relationship('Tienda', backref= 'tienda', lazy = True)
     usuarioFactura = db.relationship('Factura',  backref= 'factura', lazy = True)
-    date_created = = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     def __repr__(self):
         return f"usuario('{self.nombre}', '{self.apellido}', '{self.email}', '{self.direccion}', '{self.telefono}')"
@@ -55,8 +55,8 @@ class Tienda(db.Model):
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
     productos = db.relationship('Productos', backref= 'productos', lazy = True)
     tienda_id = db.Column(db.Integer, db.ForeignKey('categoriatienda.id'))
-
-     def __repr__(self):
+    
+    def __repr__(self):
         return f"Tienda('{self.nombre}', '{self.rut}', '{self.email}', '{self.direccion}', '{self.telefono}')"
 
     def serialize(self):
@@ -71,9 +71,6 @@ class Tienda(db.Model):
 
 
 
-
-
-
 class Productos(db.Model):
     __tablename__ = 'productos'
     id = db.Column(db.Integer, primary_key=True)
@@ -82,9 +79,9 @@ class Productos(db.Model):
     stock = db.Column(db.String(100), nullable = False, unique=True)
     precio = db.Column(db.String(100), nullable = False, unique=True)
     tienda_id = db.Column(db.Integer, db.ForeignKey('tienda.id'))
-    producto_id = db.Column(db.Integer, db.ForeignKey('Categoriaproductos.id'))
+    producto_id = db.Column(db.Integer, db.ForeignKey('categoriaproductos.id'))
 
-     def __repr__(self):
+    def __repr__(self):
         return f"Productos('{self.nombre}', '{self.foto}', '{self.stock}', '{self.precio}', '{self.telefono}')"
 
     def serialize(self):
@@ -106,7 +103,7 @@ class CategoriaProductos(db.Model):
     description = db.Column(db.Text, nullable = False)
     producto = db.relationship('Productos', backref= 'CategoryProduc', lazy = True)
 
-     def __repr__(self):
+    def __repr__(self):
         return f"CategoriaProductos('{self.id}', '{self.description}')"
 
     def serialize(self):
@@ -124,7 +121,7 @@ class CategoriaTienda(db.Model):
     description = db.Column(db.Text, nullable = False)
     tiendaCategory = db.relationship('Tienda',  backref= 'categoria', lazy = True)
     
-     def __repr__(self):
+    def __repr__(self):
         return f"CategoriaTienda('{self.id}', '{self.description}')"
 
     def serialize(self):
@@ -159,7 +156,7 @@ class Detallefactura(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     factura_id = db.Column(db.Integer, db.ForeignKey('factura.id'))
 
-     def __repr__(self):
+    def __repr__(self):
         return f"Detallefactura('{self.id}')"
 
     def serialize(self):

@@ -1,8 +1,10 @@
 import os
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
-from models import db
+from flask_cors import CORS
+from models import db, Usuario, Tienda, Productos, CategoriaProductos, CategoriaTienda, Factura, Detallefactura 
+from flask_mail import Mail
 
 
 
@@ -15,10 +17,12 @@ app.config['ENV'] = 'development'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'dev.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+CORS(app)
 
 db.init_app(app)
 Migrate(app, db)
 manager = Manager(app)
+mail = Mail(app)
 manager.add_command("db", MigrateCommand)
 
 
@@ -28,11 +32,7 @@ def root():
 
     
 
-@app.route('/api/users', methods = ['GET'])
-def users():
-    users = User.query.all()
-    users = list(map(lambda user: user.serialize(), users))
-    return jsonify(users), 209
+
 
 
 if __name__ == '__main__':
