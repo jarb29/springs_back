@@ -25,7 +25,17 @@ class Usuario(db.Model):
     usuarioFactura = db.relationship('Factura',  backref= 'factura', lazy = True)
 
     def __repr__(self):
-        return f"usuario('{self.nombre}', '{self.apellido}', '{self.email}', '{self.direccion}', '{self.nombre}')"
+        return f"usuario('{self.nombre}', '{self.apellido}', '{self.email}', '{self.direccion}', '{self.telefono}')"
+
+    def serialize(self):
+        return {
+            "id":self.id,
+            "nombre": self.nombre,
+            "apellido": self.apellido,
+            "email": self.email,
+            "direccion": self.direccion,
+            "telefono":self.telefono,
+        }  
 
 
 
@@ -38,10 +48,25 @@ class Tienda(db.Model):
     rut = db.Column(db.String(100), nullable = False, unique=True)
     email = db.Column(db.String(100), nullable = False, unique=True)
     direccion = db.Column(db.String(100), nullable = False, unique=True)
+    telefono = db.Column(db.String(100), nullable = False, unique=True)
     clave = db.Column(db.String(100), nullable = False, unique=True)
     usuario_id = db.Column(db.Integer, db.ForeignKey('Usuario.id'))
     productos = db.relationship('Productos', backref= 'productos', lazy = True)
     tienda_id = db.Column(db.Integer, db.ForeignKey('CategoriaTienda.id'))
+
+     def __repr__(self):
+        return f"Tienda('{self.nombre}', '{self.rut}', '{self.email}', '{self.direccion}', '{self.telefono}')"
+
+    def serialize(self):
+        return {
+            "id":self.id,
+            "nombre": self.nombre,
+            "rut": self.apellido,
+            "email": self.email,
+            "direccion": self.direccion,
+            "telefono":self.telefono,
+        }  
+
 
 
 
@@ -54,9 +79,21 @@ class Productos(db.Model):
     foto = db.Column(db.String(100), nullable = False, unique=True)
     stock = db.Column(db.String(100), nullable = False, unique=True)
     precio = db.Column(db.String(100), nullable = False, unique=True)
-    clave = db.Column(db.String(100), nullable = False, unique=True)
     tienda_id = db.Column(db.Integer, db.ForeignKey('Tienda.id'))
     producto_id = db.Column(db.Integer, db.ForeignKey('CategoriaProductos.id'))
+
+     def __repr__(self):
+        return f"Productos('{self.nombre}', '{self.foto}', '{self.stock}', '{self.precio}', '{self.telefono}')"
+
+    def serialize(self):
+        return {
+            "id":self.id,
+            "nombre": self.nombre,
+            "fot": self.foto,
+            "stock": self.stock,
+            "precio": self.precio,
+         
+        }  
      
 
 
@@ -67,6 +104,14 @@ class CategoriaProductos(db.Model):
     description = db.Column(db.String(100), nullable = False, unique=True)
     producto = db.relationship('Productos', backref= 'CategoryProduc', lazy = True)
 
+     def __repr__(self):
+        return f"CategoriaProductos('{self.id}', '{self.description}')"
+
+    def serialize(self):
+        return {
+            "id":self.id,
+            "description": self.description,
+        }  
 
     
 
@@ -77,6 +122,14 @@ class CategoriaTienda(db.Model):
     description = db.Column(db.String(100), nullable = False, unique=True)
     tiendaCategory = db.relationship('Tienda',  backref= 'categoria', lazy = True)
     
+     def __repr__(self):
+        return f"CategoriaTienda('{self.id}', '{self.description}')"
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "description": self.description,
+        }  
     
 
 
@@ -88,7 +141,13 @@ class Factura(db.Model):
     usuario_id = db.Column(db.Integer, db.ForeignKey('Usuario.id'))
     factura = db.relationship('Detallefactura',  backref= 'detalle', lazy = True)
 
+    def __repr__(self):
+        return f"Factura('{self.id}')"
 
+    def serialize(self):
+        return {
+            "id": self.id,
+        }  
 
     
 
@@ -98,19 +157,13 @@ class Detallefactura(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     factura_id = db.Column(db.Integer, db.ForeignKey('Factura.id'))
 
+     def __repr__(self):
+        return f"Detallefactura('{self.id}')"
 
-
-
-
-    
-    
-
-'''  def serialize(self):
+    def serialize(self):
         return {
             "id": self.id,
-            "username": self.username,
-            "name": self.name,
-            "email": self.email
+        }  
 
-        }'''
+
 
