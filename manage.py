@@ -26,8 +26,6 @@ manager.add_command("db", MigrateCommand)
 def root():
     return render_template('index.html')
 
-
-
     
 
 @app.route('/api/users', methods = ['GET'])

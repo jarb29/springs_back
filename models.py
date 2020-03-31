@@ -6,6 +6,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
@@ -23,6 +24,7 @@ class Usuario(db.Model):
     clave = db.Column(db.String(100), nullable = True)
     usuario = db.relationship('Tienda', backref= 'tienda', lazy = True)
     usuarioFactura = db.relationship('Factura',  backref= 'factura', lazy = True)
+    date_created = = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     def __repr__(self):
         return f"usuario('{self.nombre}', '{self.apellido}', '{self.email}', '{self.direccion}', '{self.telefono}')"
@@ -46,13 +48,13 @@ class Tienda(db.Model):
     id = Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable = False, unique=True)
     rut = db.Column(db.String(100), nullable = False, unique=True)
-    email = db.Column(db.String(100), nullable = False, unique=True)
+    email = db.Column(db.String(120), nullable = False, unique=True)
     direccion = db.Column(db.String(100), nullable = False, unique=True)
-    telefono = db.Column(db.String(100), nullable = False, unique=True)
-    clave = db.Column(db.String(100), nullable = False, unique=True)
-    usuario_id = db.Column(db.Integer, db.ForeignKey('Usuario.id'))
+    telefono = db.Column(db.String(100), nullable = False)
+    clave = db.Column(db.String(100), nullable = False)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
     productos = db.relationship('Productos', backref= 'productos', lazy = True)
-    tienda_id = db.Column(db.Integer, db.ForeignKey('CategoriaTienda.id'))
+    tienda_id = db.Column(db.Integer, db.ForeignKey('categoriatienda.id'))
 
      def __repr__(self):
         return f"Tienda('{self.nombre}', '{self.rut}', '{self.email}', '{self.direccion}', '{self.telefono}')"
@@ -76,11 +78,11 @@ class Productos(db.Model):
     __tablename__ = 'productos'
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable = False, unique=True)
-    foto = db.Column(db.String(100), nullable = False, unique=True)
+    foto = db.Column(db.String(100), nullable = False, default = 'default.jpg')
     stock = db.Column(db.String(100), nullable = False, unique=True)
     precio = db.Column(db.String(100), nullable = False, unique=True)
-    tienda_id = db.Column(db.Integer, db.ForeignKey('Tienda.id'))
-    producto_id = db.Column(db.Integer, db.ForeignKey('CategoriaProductos.id'))
+    tienda_id = db.Column(db.Integer, db.ForeignKey('tienda.id'))
+    producto_id = db.Column(db.Integer, db.ForeignKey('Categoriaproductos.id'))
 
      def __repr__(self):
         return f"Productos('{self.nombre}', '{self.foto}', '{self.stock}', '{self.precio}', '{self.telefono}')"
@@ -99,9 +101,9 @@ class Productos(db.Model):
 
 
 class CategoriaProductos(db.Model):
-    __tablename__ = 'categoriaProductos'
+    __tablename__ = 'categoriaproductos'
     id = db.Column(db.Integer, primary_key=True)
-    description = db.Column(db.String(100), nullable = False, unique=True)
+    description = db.Column(db.Text, nullable = False)
     producto = db.relationship('Productos', backref= 'CategoryProduc', lazy = True)
 
      def __repr__(self):
@@ -117,9 +119,9 @@ class CategoriaProductos(db.Model):
 
 
 class CategoriaTienda(db.Model):
-    __tablename__ = 'categoriaTienda'
+    __tablename__ = 'categoriatienda'
     id = db.Column(db.Integer, primary_key=True)
-    description = db.Column(db.String(100), nullable = False, unique=True)
+    description = db.Column(db.Text, nullable = False)
     tiendaCategory = db.relationship('Tienda',  backref= 'categoria', lazy = True)
     
      def __repr__(self):
@@ -138,7 +140,7 @@ class CategoriaTienda(db.Model):
 class Factura(db.Model):
     __tablename__ = 'factura'
     id = db.Column(db.Integer, primary_key=True)
-    usuario_id = db.Column(db.Integer, db.ForeignKey('Usuario.id'))
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
     factura = db.relationship('Detallefactura',  backref= 'detalle', lazy = True)
 
     def __repr__(self):
@@ -155,7 +157,7 @@ class Factura(db.Model):
 class Detallefactura(db.Model):
     __tablename__ = 'detallefactura'
     id = db.Column(db.Integer, primary_key=True)
-    factura_id = db.Column(db.Integer, db.ForeignKey('Factura.id'))
+    factura_id = db.Column(db.Integer, db.ForeignKey('factura.id'))
 
      def __repr__(self):
         return f"Detallefactura('{self.id}')"
