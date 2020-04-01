@@ -8,10 +8,12 @@ from flask_mail import Mail
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token)
 from flask_bcrypt import Bcrypt
-
-
+from werkzeug.utils import secure_filename
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static')
+ALLOWED_EXTENSIONS_IMG = {'png', 'jpg', 'jpeg'}
+
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -20,6 +22,7 @@ app.config['ENV'] = 'development'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'dev.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'super-secret-key'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 JWTManager(app)
 CORS(app)
 bcrypt = Bcrypt(app)
@@ -29,6 +32,11 @@ Migrate(app, db)
 manager = Manager(app)
 mail = Mail(app)
 manager.add_command("db", MigrateCommand)
+
+
+def allowed_file_images(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS_IMG
 
 
 @app.route('/')
@@ -106,6 +114,82 @@ def register():
     }
     return jsonify(data), 200
    
+
+
+
+@app.route('/api/register/producto', methods=['POST'])
+def register():
+    if not request.files:
+        return jsonify({"msg": "No hay archivos"}), 400
+   
+
+
+    usuario = request.form.get('nombre', None)
+    stock = request.form.get('clave', None)
+    precio = request.form.get('apellido', None)
+    file = request.files['avatar']
+
+    if file:
+        if file.filename == '': 
+            return jsonify({"msg": "Agregar nombre a la foto"}), 400
+
+    if not usuario:
+        return jsonify({"msg": "Falta el nombre del producto"}), 400
+    if not stock:
+        return jsonify({"msg": "Falta la cantidad dsiponible "}), 400
+    if not stock:
+        return jsonify({"msg": "Falta el precio"}), 400
+    
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(os.path.join(app.config['UPLOAD_FOLDER'], 'img/avatars'), filename))
+
+    usua = Productos.query.filter_by(nombre = usuario).first()
+
+    if usua:
+        return jsonify({"msg": "Usuario existe"}), 400
+        
+    usua = Productos()
+    usua.nombre = usuario 
+    usua.stock = stock
+    usua.precio = precio
+
+    if file:
+        user.fot = filename
+
+
+    db.session.add(usua)
+    db.session.commit()
+     
+    data = {
+
+        "Producto": usua.serialize()
+        "":
+    }
+    return jsonify(data), 200
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
     manager.run()

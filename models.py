@@ -73,7 +73,7 @@ class Productos(db.Model):
     __tablename__ = 'productos'
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable = False, unique=True)
-    foto = db.Column(db.String(100), nullable = False, default = 'default.jpg')
+    foto = db.Column(db.String(100), nullable = False, default = 'favicon.ico')
     stock = db.Column(db.String(100), nullable = False, unique=True)
     precio = db.Column(db.String(100), nullable = False, unique=True)
     tienda_id = db.Column(db.Integer, db.ForeignKey('tienda.id'))
