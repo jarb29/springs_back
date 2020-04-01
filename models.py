@@ -16,14 +16,14 @@ db = SQLAlchemy(app)
 class Usuario(db.Model):
     __tablename__ = 'usuario'
     id = db.Column(db.Integer, primary_key = True)
-    nombre = db.Column(db.String(100), nullable = False, unique=True)
-    apellido = db.Column(db.String(100), nullable = False, unique=True)
+    nombre = db.Column(db.String(100), nullable = False)
+    apellido = db.Column(db.String(100), nullable = False)
     email = db.Column(db.String(100), nullable = False, unique=True)
     direccion = db.Column(db.String(100), nullable = False, unique=True)
     telefono = db.Column(db.String(100), nullable = False)
     clave = db.Column(db.String(100), nullable = True)
     usuario = db.relationship('Tienda', backref= 'tienda', lazy = True)
-    usuarioFactura = db.relationship('Factura',  backref= 'factura', lazy = True)
+    usuariofactura = db.relationship('Factura',  backref= 'detale_factura', lazy = True)
     date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     def __repr__(self):
@@ -38,8 +38,6 @@ class Usuario(db.Model):
             "direccion": self.direccion,
             "telefono":self.telefono,
         }  
-
-
 
 
 
@@ -91,7 +89,6 @@ class Productos(db.Model):
             "fot": self.foto,
             "stock": self.stock,
             "precio": self.precio,
-         
         }  
      
 
@@ -129,9 +126,6 @@ class CategoriaTienda(db.Model):
             "id": self.id,
             "description": self.description,
         }  
-    
-
-
 
 
 class Factura(db.Model):
@@ -147,8 +141,6 @@ class Factura(db.Model):
         return {
             "id": self.id,
         }  
-
-    
 
 
 class Detallefactura(db.Model):

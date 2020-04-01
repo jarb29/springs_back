@@ -19,7 +19,8 @@ app.config['DEBUG'] = True
 app.config['ENV'] = 'development'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'dev.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
+app.config['JWT_SECRET_KEY'] = 'super-secret-key'
+JWTManager(app)
 CORS(app)
 bcrypt = Bcrypt(app)
 
@@ -40,81 +41,71 @@ def login():
     if not request.is_json:
         return jsonify({"msg": "Missing JSON in request"}), 400
 
-    username = request.json.get('username', None)
-    password = request.json.get('password', None)
-    if not username:
+    usuario = request.json.get('nombre', None)
+    clave = request.json.get('clave', None)
+    if not usuario:
         return jsonify({"msg": "Missing username parameter"}), 400
-    if not password:
+    if not clave:
         return jsonify({"msg": "Missing password parameter"}), 400
 
-    usuario = Usuario.query.filter_by(nombre=nombre).first()
+    usua = Usuario.query.filter_by(nombre = usuario).first()
 
-    if not usuario:
-        return jsonify({"msg": "User not found"}), 404
+    if not usua:
+        return jsonify({"msg": "Usuario no existe"}), 404
 
-    if bcrypt.check_password_hash(usuario.contraseña, contraseña):
-        # Identity can be any data that is json serializable
-        access_token = create_access_token(identity=nombre)
+    if bcrypt.check_password_hash(usua.clave, clave):
+        access_token = create_access_token(identity = usuario)
         data = {
             "access_token": access_token,
-            "user": usuario.serialize()
+            "Usuario": usua.serialize()
         }
         return jsonify(data), 200
+
     else:
         return jsonify({"msg": "Usuario errado"}), 401
 
+
+
 @app.route('/api/register', methods=['POST'])
 def register():
-    #if not request.files:
-    #    return jsonify({"msg": "Missing FILES in request"}), 400
+    if not request.is_json:
+        return jsonify({"msg": "Missing JSON in request"}), 400
 
-    #if not request.is_json:
-    #    return jsonify({"msg": "Missing JSON in request"}), 400
+    usuario = request.json.get('nombre', None)
+    clave = request.json.get('clave', None)
+    apellido = request.json.get('apellido', None)
+    email = request.json.get('email', None)
+    direccion = request.json.get('direccion', None)
+    telefono = request.json.get('telefono', None)
 
-    username = request.form.get('username', None)
-    password = request.form.get('password', None)
 
-    file = request.files['avatar']
-    if file:
-        if file.filename == '':
-            return jsonify({"msg": "Missing avatar parameter"}), 400
+    if not usuario:
+        return jsonify({"msg": "Falta el nombre"}), 400
+    if not clave:
+        return jsonify({"msg": "Falta la clave"}), 400
 
-    if not username or username=="":
-        return jsonify({"msg": "Missing username parameter"}), 400
-    
-    if not password or password=="":
-        return jsonify({"msg": "Missing password parameter"}), 400
+    usua = Usuario.query.filter_by(nombre = usuario).first()
 
-    if file and allowed_file_images(file.filename):
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(os.path.join(app.config['UPLOAD_FOLDER'], 'img/avatars'), filename))
-
-    user = User.query.filter_by(username=username).first()
-
-    if user:
-        return jsonify({"msg": "User exists"}), 400
-
-    user = User()
-    user.username = username
-    user.password = bcrypt.generate_password_hash(password)
-
-    if file:
-        user.avatar = filename
-
-    db.session.add(user)
+    if usua:
+        return jsonify({"msg": "Usuario existe"}), 400
+        
+    usua = Usuario()
+    usua.nombre = usuario
+    usua.clave = bcrypt.generate_password_hash(clave) 
+    usua.apellido = apellido
+    usua.email = email
+    usua.direccion = direccion
+    usua.telefono = telefono
+    db.session.add(usua)
     db.session.commit()
-
-    access_token = create_access_token(identity=user.username)
+    access_token = create_access_token(identity=usua.nombre)
+     
     data = {
         "access_token": access_token,
-        "user": user.serialize()
+        "Usuario": usua.serialize()
     }
     return jsonify(data), 200
-
-    
-
-
-
+   
 
 if __name__ == '__main__':
     manager.run()
