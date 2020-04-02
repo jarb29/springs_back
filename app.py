@@ -118,36 +118,36 @@ def register():
 
 
 @app.route('/api/register/producto', methods=['POST'])
-def register():
+def producto():
     if not request.files:
         return jsonify({"msg": "No hay archivos"}), 400
    
 
 
     usuario = request.form.get('nombre', None)
-    stock = request.form.get('clave', None)
-    precio = request.form.get('apellido', None)
+    stock = request.form.get('stock', None)
+    precio = request.form.get('precio', None)
     file = request.files['avatar']
 
     if file:
         if file.filename == '': 
             return jsonify({"msg": "Agregar nombre a la foto"}), 400
 
-    if not usuario:
+    if not usuario or usuario =='':
         return jsonify({"msg": "Falta el nombre del producto"}), 400
-    if not stock:
+    if not stock or stock == '':
         return jsonify({"msg": "Falta la cantidad dsiponible "}), 400
-    if not stock:
+    if not precio or precio == '':
         return jsonify({"msg": "Falta el precio"}), 400
     
-    if file and allowed_file(file.filename):
+    if file and allowed_file_images(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(os.path.join(app.config['UPLOAD_FOLDER'], 'img/avatars'), filename))
 
     usua = Productos.query.filter_by(nombre = usuario).first()
 
     if usua:
-        return jsonify({"msg": "Usuario existe"}), 400
+        return jsonify({"msg": "EL producto ya existe"}), 400
         
     usua = Productos()
     usua.nombre = usuario 
@@ -155,7 +155,7 @@ def register():
     usua.precio = precio
 
     if file:
-        user.fot = filename
+        usua.foto = filename
 
 
     db.session.add(usua)
@@ -164,7 +164,7 @@ def register():
     data = {
 
         "Producto": usua.serialize()
-        "":
+   
     }
     return jsonify(data), 200
 

@@ -72,10 +72,10 @@ class Tienda(db.Model):
 class Productos(db.Model):
     __tablename__ = 'productos'
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), nullable = False, unique=True)
-    foto = db.Column(db.String(100), nullable = False, default = 'favicon.ico')
-    stock = db.Column(db.String(100), nullable = False, unique=True)
-    precio = db.Column(db.String(100), nullable = False, unique=True)
+    nombre = db.Column(db.String(100), nullable = False)
+    avatar = db.Column(db.String(100), nullable = False, default = 'favicon.ico')
+    stock = db.Column(db.String(100), nullable = False)
+    precio = db.Column(db.String(100), nullable = False)
     tienda_id = db.Column(db.Integer, db.ForeignKey('tienda.id'))
     producto_id = db.Column(db.Integer, db.ForeignKey('categoriaproductos.id'))
 
@@ -86,7 +86,7 @@ class Productos(db.Model):
         return {
             "id":self.id,
             "nombre": self.nombre,
-            "fot": self.foto,
+            "avatar": self.avatar,
             "stock": self.stock,
             "precio": self.precio,
         }  
