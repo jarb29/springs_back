@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, url_for, redirect
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_cors import CORS
@@ -44,33 +44,34 @@ def root():
     return render_template('index.html')
 
 
-@app.route('/api/login', methods=['POST'])
+@app.route('/api/loging', methods=['POST'])
 def login():
     if not request.is_json:
         return jsonify({"msg": "Missing JSON in request"}), 400
+    if request.method == 'POST':
 
-    usuario = request.json.get('nombre', None)
-    clave = request.json.get('clave', None)
-    if not usuario:
-        return jsonify({"msg": "Missing username parameter"}), 400
-    if not clave:
-        return jsonify({"msg": "Missing password parameter"}), 400
+        usuario = request.json.get('email', None)
+        clave = request.json.get('clave', None)
+        if not usuario:
+            return jsonify({"msg": "Falta introducir el email"}), 400
+        if not clave:
+            return jsonify({"msg": "Falta introducir la clave"}), 400
 
-    usua = Usuario.query.filter_by(nombre = usuario).first()
+        usua = Usuario.query.filter_by(email = usuario).first()
 
-    if not usua:
-        return jsonify({"msg": "Usuario no existe"}), 404
+        if not usua:
+            return jsonify({"msg": "Usuario no existe"}), 404
 
-    if bcrypt.check_password_hash(usua.clave, clave):
-        access_token = create_access_token(identity = usuario)
-        data = {
-            "access_token": access_token,
-            "Usuario": usua.serialize()
-        }
-        return jsonify(data), 200
+        if bcrypt.check_password_hash(usua.clave, clave):
+            access_token = create_access_token(identity = usua.nombre)
+            data = {
+                "access_token": access_token,
+                "Usuario": usua.serialize()
+            }
+            return jsonify(data), 200
 
-    else:
-        return jsonify({"msg": "Usuario errado"}), 401
+        else:
+            return jsonify({"msg": "email/ clave errados favor verificar"}), 401
 
 
 
@@ -91,8 +92,18 @@ def register():
         return jsonify({"msg": "Falta el nombre"}), 400
     if not clave:
         return jsonify({"msg": "Falta la clave"}), 400
+    if not apellido:
+        return jsonify({"msg": "Falta la apellido"}), 400
+    if not email:
+        return jsonify({"msg": "Falta la email"}), 400
+    if not direccion:
+        return jsonify({"msg": "Falta la direccion"}), 400
+    if not telefono:
+        return jsonify({"msg": "Falta la telefono"}), 400
 
-    usua = Usuario.query.filter_by(nombre = usuario).first()
+
+
+    usua = Usuario.query.filter_by(nombre = email).first()
 
     if usua:
         return jsonify({"msg": "Usuario existe"}), 400
@@ -107,12 +118,13 @@ def register():
     db.session.add(usua)
     db.session.commit()
     access_token = create_access_token(identity=usua.nombre)
+   
      
     data = {
         "access_token": access_token,
         "Usuario": usua.serialize()
     }
-    return jsonify(data), 200
+    return jsonify(data), redirect(url_for('login')),  200
    
 
 

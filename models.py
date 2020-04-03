@@ -19,7 +19,7 @@ class Usuario(db.Model):
     nombre = db.Column(db.String(100), nullable = False)
     apellido = db.Column(db.String(100), nullable = False)
     email = db.Column(db.String(100), nullable = False, unique=True)
-    direccion = db.Column(db.String(100), nullable = False, unique=True)
+    direccion = db.Column(db.String(100), nullable = False)
     telefono = db.Column(db.String(100), nullable = False)
     clave = db.Column(db.String(100), nullable = True)
     usuario = db.relationship('Tienda', backref= 'tienda', lazy = True)
