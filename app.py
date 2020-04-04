@@ -163,7 +163,7 @@ def producto():
     usua.precio = precio
 
     if file:
-        usua.foto = filename
+        usua.avatar = filename
 
 
     db.session.add(usua)
