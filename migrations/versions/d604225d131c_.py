@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 5f37baa11415
+Revision ID: d604225d131c
 Revises: 
-Create Date: 2020-04-03 17:29:50.723587
+Create Date: 2020-04-04 12:06:22.306183
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '5f37baa11415'
+revision = 'd604225d131c'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -49,19 +49,20 @@ def upgrade():
     op.create_table('tienda',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('nombre', sa.String(length=100), nullable=False),
+    sa.Column('categoria', sa.String(length=100), nullable=False),
     sa.Column('rut', sa.String(length=100), nullable=False),
     sa.Column('email', sa.String(length=120), nullable=False),
-    sa.Column('direccion', sa.String(length=100), nullable=False),
-    sa.Column('telefono', sa.String(length=100), nullable=False),
+    sa.Column('latitude', sa.String(length=100), nullable=False),
+    sa.Column('longitude', sa.String(length=100), nullable=False),
     sa.Column('clave', sa.String(length=100), nullable=False),
     sa.Column('usuario_id', sa.Integer(), nullable=True),
     sa.Column('tienda_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['tienda_id'], ['categoriatienda.id'], ),
     sa.ForeignKeyConstraint(['usuario_id'], ['usuario.id'], ),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('direccion'),
     sa.UniqueConstraint('email'),
-    sa.UniqueConstraint('nombre'),
+    sa.UniqueConstraint('latitude'),
+    sa.UniqueConstraint('longitude'),
     sa.UniqueConstraint('rut')
     )
     op.create_table('detallefactura',

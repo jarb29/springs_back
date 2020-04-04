@@ -93,6 +93,9 @@ def register():
         return jsonify({"msg": "Falta el apellido"}), 400
     if not email:
         return jsonify({"msg": "Falta el email"}), 400
+    usua = Usuario.query.filter_by(email = email).first()
+    if usua:
+        return jsonify({"msg": "Usuario existe por favor elegir diferente Email"}), 400
     if not direccion:
         return jsonify({"msg": "Falta la direccion"}), 400
     if not telefono:
@@ -101,10 +104,7 @@ def register():
         return jsonify({"msg": "Falta la clave"}), 400
     
 
-    usua = Usuario.query.filter_by(email = email).first()
-
-    if usua:
-        return jsonify({"msg": "Usuario existe por favor elegir diferente Email"}), 400
+    
         
     usua = Usuario()
     usua.nombre = usuario
@@ -184,10 +184,94 @@ def productos():
 
 
 
+@app.route('/api/registerTienda', methods=['POST'])
+def registerTienda():
+    if not request.is_json:
+        return jsonify({"msg": "Missing JSON in request"}), 400
+
+    usuario = request.json.get('nombre', None)
+    categoria = request.json.get('categoria', None)
+    rut = request.json.get('rut', None)
+    email = request.json.get('email', None)
+    latitude = request.json.get('latitude', None)
+    longitude = request.json.get('longitude', None)
+    clave = request.json.get('clave', None)
+  
+
+
+    if not usuario:
+        return jsonify({"msg": "Falta el nombre de la Tienda"}), 400
+    if not categoria:
+        return jsonify({"msg": "Falta la categoria de la Tienda"}), 400
+    if not rut:
+        return jsonify({"msg": "Falta el rut de la Tienda"}), 400
+    usua_rut = Tienda.query.filter_by(rut = rut).first()
+    if usua_rut:
+        return jsonify({"msg": "Favor proveer Rut valido"}), 400
+    if not email:
+        return jsonify({"msg": "Falta el Email de la Tienda"}), 400
+    usua = Tienda.query.filter_by(email = email).first()
+    if usua:
+        return jsonify({"msg": "Usuario existe por favor elegir un Email diferente"}), 400
+    if not latitude:
+        return jsonify({"msg": "Falta la latitude de la Tienda"}), 400
+    if not longitude:
+        return jsonify({"msg": "Falta el longitud de la Tienda"}), 400
+    if not clave:
+        return jsonify({"msg": "Falta la clave"}), 400
+    
+
+    
+        
+    usua = Tienda()
+    usua.nombre = usuario
+    usua.clave = bcrypt.generate_password_hash(clave) 
+    usua.categoria = categoria
+    usua.rut = rut
+    usua.email = email
+    usua.latitude = latitude
+    usua.longitude = longitude
+    db.session.add(usua)
+    db.session.commit()
+    access_token = create_access_token(identity=usua.nombre)
+   
+     
+    data = {
+        "access_token": access_token,
+        "Tienda": usua.serialize()
+    }
+    return jsonify(data),  200
 
 
 
 
+@app.route('/api/logingTienda', methods=['POST'])
+def logingTienda():
+    if not request.is_json:
+        return jsonify({"msg": "Missing JSON in request"}), 400
+    if request.method == 'POST':
+
+        usuario = request.json.get('email', None)
+        clave = request.json.get('clave', None)
+        if not usuario:
+            return jsonify({"msg": "Falta introducir el email"}), 400
+        if not clave:
+            return jsonify({"msg": "Falta introducir la clave"}), 400
+
+        usua = Tienda.query.filter_by(email = usuario).first()
+
+        if not usua:
+            return jsonify({"msg": "Usuario no existe"}), 404
+
+        if bcrypt.check_password_hash(usua.clave, clave):
+            access_token = create_access_token(identity = usua.nombre)
+            data = {
+                "access_token": access_token,
+                "Tienda": usua.serialize()
+            }
+            return jsonify(data), 200
+        else:
+            return jsonify({"msg": "email/ clave errados favor verificar"}), 401
 
 
 

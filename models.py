@@ -44,27 +44,30 @@ class Usuario(db.Model):
 class Tienda(db.Model):
     __tablename__ = 'tienda'
     id = Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), nullable = False, unique=True)
+    nombre = db.Column(db.String(100), nullable = False)
+    categoria = db.Column(db.String(100), nullable = False)
     rut = db.Column(db.String(100), nullable = False, unique=True)
     email = db.Column(db.String(120), nullable = False, unique=True)
-    direccion = db.Column(db.String(100), nullable = False, unique=True)
-    telefono = db.Column(db.String(100), nullable = False)
+    latitude = db.Column(db.String(100), nullable = False, unique=True)
+    longitude = db.Column(db.String(100), nullable = False, unique=True)
     clave = db.Column(db.String(100), nullable = False)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
-    productos = db.relationship('Productos', backref= 'productos', lazy = True)
+    productos_tienda = db.relationship('Productos', backref= 'productos_tienda', lazy = True)
     tienda_id = db.Column(db.Integer, db.ForeignKey('categoriatienda.id'))
     
     def __repr__(self):
-        return f"Tienda('{self.nombre}', '{self.rut}', '{self.email}', '{self.direccion}', '{self.telefono}')"
+        return f"Tienda('{self.nombre}', '{self.rut}', '{self.email}', '{self.latitude}', '{self.longitude}', '{self.categoria}', '{self.clave}')"
 
     def serialize(self):
         return {
             "id":self.id,
             "nombre": self.nombre,
-            "rut": self.apellido,
+            "rut": self.rut,
             "email": self.email,
-            "direccion": self.direccion,
-            "telefono":self.telefono,
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+  
+
         }  
 
 
@@ -116,7 +119,7 @@ class CategoriaTienda(db.Model):
     __tablename__ = 'categoriatienda'
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.Text, nullable = False)
-    tiendaCategory = db.relationship('Tienda',  backref= 'categoria', lazy = True)
+    tiendaCategory = db.relationship('Tienda',  backref= 'categoria_portienda', lazy = True)
     
     def __repr__(self):
         return f"CategoriaTienda('{self.id}', '{self.description}')"
