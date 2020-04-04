@@ -69,7 +69,6 @@ def login():
                 "Usuario": usua.serialize()
             }
             return jsonify(data), 200
-
         else:
             return jsonify({"msg": "email/ clave errados favor verificar"}), 401
 
@@ -90,23 +89,22 @@ def register():
 
     if not usuario:
         return jsonify({"msg": "Falta el nombre"}), 400
-    if not clave:
-        return jsonify({"msg": "Falta la clave"}), 400
     if not apellido:
-        return jsonify({"msg": "Falta la apellido"}), 400
+        return jsonify({"msg": "Falta el apellido"}), 400
     if not email:
-        return jsonify({"msg": "Falta la email"}), 400
+        return jsonify({"msg": "Falta el email"}), 400
     if not direccion:
         return jsonify({"msg": "Falta la direccion"}), 400
     if not telefono:
-        return jsonify({"msg": "Falta la telefono"}), 400
+        return jsonify({"msg": "Falta el telefono"}), 400
+    if not clave:
+        return jsonify({"msg": "Falta la clave"}), 400
+    
 
-
-
-    usua = Usuario.query.filter_by(nombre = email).first()
+    usua = Usuario.query.filter_by(email = email).first()
 
     if usua:
-        return jsonify({"msg": "Usuario existe"}), 400
+        return jsonify({"msg": "Usuario existe por favor elegir diferente Email"}), 400
         
     usua = Usuario()
     usua.nombre = usuario
@@ -124,7 +122,7 @@ def register():
         "access_token": access_token,
         "Usuario": usua.serialize()
     }
-    return jsonify(data), redirect(url_for('login')),  200
+    return jsonify(data),  200
    
 
 
@@ -134,8 +132,6 @@ def producto():
     if not request.files:
         return jsonify({"msg": "No hay archivos"}), 400
    
-
-
     usuario = request.form.get('nombre', None)
     stock = request.form.get('stock', None)
     precio = request.form.get('precio', None)
