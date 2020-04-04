@@ -176,7 +176,10 @@ def producto():
     }
     return jsonify(data), 200
 
-
+@app.route('/api/productos', methods=['GET'])
+def productos():
+    listaProductos = Productos.query.get(productos)
+    return jsonify(listaPproductos.serialize()), 200
 
 
 
