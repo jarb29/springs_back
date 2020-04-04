@@ -66,8 +66,7 @@ class Tienda(db.Model):
             "email": self.email,
             "latitude": self.latitude,
             "longitude": self.longitude,
-  
-
+            "categoria": self.categoria,
         }  
 
 
@@ -83,7 +82,7 @@ class Productos(db.Model):
     producto_id = db.Column(db.Integer, db.ForeignKey('categoriaproductos.id'))
 
     def __repr__(self):
-        return f"Productos('{self.nombre}', '{self.foto}', '{self.stock}', '{self.precio}', '{self.telefono}')"
+        return f"Productos('{self.nombre}', '{self.avatar}', '{self.stock}', '{self.precio}')"
 
     def serialize(self):
         return {

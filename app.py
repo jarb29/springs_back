@@ -275,6 +275,16 @@ def logingTienda():
 
 
 
+@app.route('/api/mapa', methods=['GET'])
+@jwt_required
+def protected():
+
+    datosProductos = Tienda.query.all()
+    datosProductos = list(map(lambda datosProductos: datosProductos.serialize(), datosProductos))
+    
+    return jsonify(datosProductos), 200
+
+
 
 
 
