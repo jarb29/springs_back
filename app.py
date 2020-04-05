@@ -3,7 +3,7 @@ from flask import Flask, render_template, jsonify, request, url_for, redirect
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_cors import CORS
-from models import db, Usuario, Tienda, Productos, CategoriaProductos, CategoriaTienda, Factura, Detallefactura 
+from models import db, Usuario, Tienda, Productos, Factura, Detallefactura 
 from flask_mail import Mail
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token)
@@ -158,6 +158,7 @@ def producto():
         return jsonify({"msg": "EL producto ya existe"}), 400
         
     usua = Productos()
+    usua.id = 
     usua.nombre = usuario 
     usua.stock = stock
     usua.precio = precio

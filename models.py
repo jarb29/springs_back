@@ -22,9 +22,8 @@ class Usuario(db.Model):
     direccion = db.Column(db.String(100), nullable = False)
     telefono = db.Column(db.String(100), nullable = False)
     clave = db.Column(db.String(100), nullable = True)
-    usuario = db.relationship('Tienda', backref= 'tienda', lazy = True)
-    usuariofactura = db.relationship('Factura',  backref= 'detale_factura', lazy = True)
-    date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    usuario_factura = db.relationship('Factura',  backref= 'detale_factura', lazy = True)
+    date_created = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
         return f"usuario('{self.nombre}', '{self.apellido}', '{self.email}', '{self.direccion}', '{self.telefono}')"
@@ -51,9 +50,8 @@ class Tienda(db.Model):
     latitude = db.Column(db.String(100), nullable = False, unique=True)
     longitude = db.Column(db.String(100), nullable = False, unique=True)
     clave = db.Column(db.String(100), nullable = False)
-    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
     productos_tienda = db.relationship('Productos', backref= 'productos_tienda', lazy = True)
-    tienda_id = db.Column(db.Integer, db.ForeignKey('categoriatienda.id'))
+  
     
     def __repr__(self):
         return f"Tienda('{self.nombre}', '{self.rut}', '{self.email}', '{self.latitude}', '{self.longitude}', '{self.categoria}', '{self.clave}')"
@@ -78,8 +76,7 @@ class Productos(db.Model):
     avatar = db.Column(db.String(100), nullable = False, default = 'favicon.ico')
     stock = db.Column(db.String(100), nullable = False)
     precio = db.Column(db.String(100), nullable = False)
-    tienda_id = db.Column(db.Integer, db.ForeignKey('tienda.id'))
-    producto_id = db.Column(db.Integer, db.ForeignKey('categoriaproductos.id'))
+    tienda_id = db.Column(db.Integer, db.ForeignKey('tienda.id'), nullable=False)
 
     def __repr__(self):
         return f"Productos('{self.nombre}', '{self.avatar}', '{self.stock}', '{self.precio}')"
@@ -96,45 +93,12 @@ class Productos(db.Model):
 
 
 
-class CategoriaProductos(db.Model):
-    __tablename__ = 'categoriaproductos'
-    id = db.Column(db.Integer, primary_key=True)
-    description = db.Column(db.Text, nullable = False)
-    producto = db.relationship('Productos', backref= 'CategoryProduc', lazy = True)
-
-    def __repr__(self):
-        return f"CategoriaProductos('{self.id}', '{self.description}')"
-
-    def serialize(self):
-        return {
-            "id":self.id,
-            "description": self.description,
-        }  
-
-    
-
-
-class CategoriaTienda(db.Model):
-    __tablename__ = 'categoriatienda'
-    id = db.Column(db.Integer, primary_key=True)
-    description = db.Column(db.Text, nullable = False)
-    tiendaCategory = db.relationship('Tienda',  backref= 'categoria_portienda', lazy = True)
-    
-    def __repr__(self):
-        return f"CategoriaTienda('{self.id}', '{self.description}')"
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "description": self.description,
-        }  
-
 
 class Factura(db.Model):
     __tablename__ = 'factura'
     id = db.Column(db.Integer, primary_key=True)
-    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
-    factura = db.relationship('Detallefactura',  backref= 'detalle', lazy = True)
+    usuario_factura_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+    factura_detalle = db.relationship('Detallefactura',  backref= 'detalle', lazy = True)
 
     def __repr__(self):
         return f"Factura('{self.id}')"
