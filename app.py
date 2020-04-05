@@ -6,7 +6,7 @@ from flask_cors import CORS
 from models import db, Usuario, Tienda, Productos, Factura, Detallefactura 
 from flask_mail import Mail
 from flask_jwt_extended import (
-    JWTManager, jwt_required, create_access_token)
+    JWTManager, jwt_required, create_access_token, get_jwt_identity)
 from flask_bcrypt import Bcrypt
 from werkzeug.utils import secure_filename
 
@@ -128,10 +128,12 @@ def register():
 
 
 @app.route('/api/register/producto', methods=['POST'])
+
 def producto():
     if not request.files:
         return jsonify({"msg": "No hay archivos"}), 400
-   
+    
+    
     usuario = request.form.get('nombre', None)
     stock = request.form.get('stock', None)
     precio = request.form.get('precio', None)
