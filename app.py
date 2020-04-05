@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, jsonify, request, redirect
+from flask import Flask, render_template, jsonify, request, redirect, send_from_directory
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_cors import CORS
@@ -175,13 +175,16 @@ def producto():
 
 
 
-@app.route('/api/productos', methods=['GET'])
-def productos():
-    listaProductos = Productos.query.get(productos)
-    return jsonify(listaPproductos.serialize()), 200
+@app.route('/api/tienda/<int:id>', methods=['GET'])
+@jwt_required
+def productos(id):
+    listaProductos = Productos.query.filter_by(tienda_id=id).all()
+    listaProductos = list(map(lambda listaProductos: listaProductos.serialize(), listaProductos))
+    return jsonify(listaProductos), 200
 
-
-
+@app.route('/api/producto/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], 'img/avatars'), filename)
 
 @app.route('/api/registerTienda', methods=['POST'])
 def registerTienda():
