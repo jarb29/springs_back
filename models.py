@@ -50,7 +50,7 @@ class Tienda(db.Model):
     latitude = db.Column(db.String(100), nullable = False, unique=True)
     longitude = db.Column(db.String(100), nullable = False, unique=True)
     clave = db.Column(db.String(100), nullable = False)
-    productos_tienda = db.relationship('Productos', backref= 'productos_tienda', lazy = True)
+    productos_tienda = db.relationship('Productos', backref= 'productos_t', lazy = True)
   
     
     def __repr__(self):
@@ -76,7 +76,9 @@ class Productos(db.Model):
     avatar = db.Column(db.String(100), nullable = False, default = 'favicon.ico')
     stock = db.Column(db.String(100), nullable = False)
     precio = db.Column(db.String(100), nullable = False)
+    description = db.Column(db.String(100), nullable = False)
     tienda_id = db.Column(db.Integer, db.ForeignKey('tienda.id'), nullable=False)
+    factura_Productos = db.relationship('Factura', backref= 'factura_p', lazy = True)
 
     def __repr__(self):
         return f"Productos('{self.nombre}', '{self.avatar}', '{self.stock}', '{self.precio}')"
@@ -99,6 +101,7 @@ class Factura(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     usuario_factura_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
     factura_detalle = db.relationship('Detallefactura',  backref= 'detalle', lazy = True)
+    producto_id = db.Column(db.Integer, db.ForeignKey('productos.id'), nullable=False)
 
     def __repr__(self):
         return f"Factura('{self.id}')"

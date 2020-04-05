@@ -127,9 +127,9 @@ Change app.run() by:
 ### Step 12:
 Generate database, migrations and tables
 ​
-    python manage.py db init -- only the first time
-    python manage.py db migrate -- generate the migrations
-    python manage.py db upgrade -- update the database
+    python app.py db init -- only the first time
+    python app.py db migrate -- generate the migrations
+    python app.py db upgrade -- update the database
 ​
 ​
 ### Step 13 

@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, jsonify, request, url_for, redirect
+from flask import Flask, render_template, jsonify, request, redirect
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_cors import CORS
@@ -128,56 +128,52 @@ def register():
 
 
 @app.route('/api/register/producto', methods=['POST'])
-
 def producto():
-    if not request.files:
-        return jsonify({"msg": "No hay archivos"}), 400
-    
-    
-    usuario = request.form.get('nombre', None)
+
+    nombre = request.form.get('nombreProducto', None)
+    description = request.form.get('descripcion', None)
     stock = request.form.get('stock', None)
     precio = request.form.get('precio', None)
+    tienda_id = request.form.get('tienda_id', None)
     file = request.files['avatar']
 
+  
     if file:
         if file.filename == '': 
             return jsonify({"msg": "Agregar nombre a la foto"}), 400
-
-    if not usuario or usuario =='':
+    if not nombre or nombre =='':
         return jsonify({"msg": "Falta el nombre del producto"}), 400
     if not stock or stock == '':
         return jsonify({"msg": "Falta la cantidad dsiponible "}), 400
     if not precio or precio == '':
         return jsonify({"msg": "Falta el precio"}), 400
-    
+
     if file and allowed_file_images(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(os.path.join(app.config['UPLOAD_FOLDER'], 'img/avatars'), filename))
 
-    usua = Productos.query.filter_by(nombre = usuario).first()
+    usua = Productos.query.filter_by(nombre = nombre).first()
 
     if usua:
         return jsonify({"msg": "EL producto ya existe"}), 400
-        
     usua = Productos()
-    usua.id = 
-    usua.nombre = usuario 
+    usua.nombre = nombre 
     usua.stock = stock
+    usua.description = description
     usua.precio = precio
+    usua.tienda_id = tienda_id 
 
     if file:
         usua.avatar = filename
 
-
     db.session.add(usua)
     db.session.commit()
-     
     data = {
-
         "Producto": usua.serialize()
-   
     }
     return jsonify(data), 200
+
+
 
 @app.route('/api/productos', methods=['GET'])
 def productos():
@@ -222,9 +218,6 @@ def registerTienda():
         return jsonify({"msg": "Falta el longitud de la Tienda"}), 400
     if not clave:
         return jsonify({"msg": "Falta la clave"}), 400
-    
-
-    
         
     usua = Tienda()
     usua.nombre = usuario
@@ -237,7 +230,6 @@ def registerTienda():
     db.session.add(usua)
     db.session.commit()
     access_token = create_access_token(identity=usua.nombre)
-   
      
     data = {
         "access_token": access_token,
@@ -286,13 +278,6 @@ def protected():
     datosProductos = list(map(lambda datosProductos: datosProductos.serialize(), datosProductos))
     
     return jsonify(datosProductos), 200
-
-
-
-
-
-
-
 
 
 
