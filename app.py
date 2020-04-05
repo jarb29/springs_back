@@ -128,11 +128,12 @@ def register():
 
 
 @app.route('/api/register/producto', methods=['POST'])
+
 def producto():
     if not request.files:
         return jsonify({"msg": "No hay archivos"}), 400
     
-    current_user = get_jwt_identity('id')
+    
     usuario = request.form.get('nombre', None)
     stock = request.form.get('stock', None)
     precio = request.form.get('precio', None)
