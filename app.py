@@ -175,12 +175,20 @@ def producto():
 
 
 
-@app.route('/api/tienda/<int:id>', methods=['GET'])
+@app.route('/api/admin/<int:id>', methods=['GET'])
 @jwt_required
 def productos(id):
     listaProductos = Productos.query.filter_by(tienda_id=id).all()
     listaProductos = list(map(lambda listaProductos: listaProductos.serialize(), listaProductos))
     return jsonify(listaProductos), 200
+
+@app.route('/api/tienda/<int:id>', methods=['GET'])
+@jwt_required
+def tiendaSeleccionada(id):
+    listaProductos = Productos.query.filter_by(tienda_id=id).all()
+    listaProductos = list(map(lambda listaProductos: listaProductos.serialize(), listaProductos))
+    return jsonify(listaProductos), 200
+
 
 @app.route('/api/producto/<filename>')
 def uploaded_file(filename):
