@@ -135,6 +135,7 @@ def producto():
     stock = request.form.get('stock', None)
     precio = request.form.get('precio', None)
     tienda_id = request.form.get('tienda_id', None)
+    categoria = request.form.get('categoria', None)
     file = request.files['avatar']
 
   
@@ -143,17 +144,23 @@ def producto():
             return jsonify({"msg": "Agregar nombre a la foto"}), 400
     if not nombre or nombre =='':
         return jsonify({"msg": "Falta el nombre del producto"}), 400
+    if not description or description == '':
+        return jsonify({"msg": "Falta la description "}), 400
     if not stock or stock == '':
-        return jsonify({"msg": "Falta la cantidad dsiponible "}), 400
+        return jsonify({"msg": "Falta la cantidad disponible "}), 400
     if not precio or precio == '':
         return jsonify({"msg": "Falta el precio"}), 400
+    if not tienda_id:
+        return jsonify({"msg": "Falta el id de la tienda relacionada"}), 400
+    if not categoria or categoria == '':
+        return jsonify({"msg": "Falta la categoria"}), 400
 
     if file and allowed_file_images(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(os.path.join(app.config['UPLOAD_FOLDER'], 'img/avatars'), filename))
 
-    usua = Productos.query.filter_by(nombre = nombre).first()
-
+    usua = Productos.query.filter_by(tienda_id=tienda_id, nombre = nombre).first()
+   
     if usua:
         return jsonify({"msg": "EL producto ya existe"}), 400
     usua = Productos()
@@ -161,6 +168,7 @@ def producto():
     usua.stock = stock
     usua.description = description
     usua.precio = precio
+    usua.categoria = categoria
     usua.tienda_id = tienda_id 
 
     if file:
@@ -193,6 +201,21 @@ def tiendaSeleccionada(id):
 @app.route('/api/producto/<filename>')
 def uploaded_file(filename):
     return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], 'img/avatars'), filename)
+
+
+
+
+
+
+@app.route('/api/tienda/<filename>')
+def uploaded_fil(filename):
+    return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], 'img/avatars'), filename)
+
+
+
+
+
+
 
 @app.route('/api/registerTienda', methods=['POST'])
 def registerTienda():

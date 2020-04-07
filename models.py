@@ -77,6 +77,7 @@ class Productos(db.Model):
     stock = db.Column(db.String(100), nullable = False)
     precio = db.Column(db.String(100), nullable = False)
     description = db.Column(db.String(100), nullable = False)
+    categoria = db.Column(db.String(100), nullable = False)
     tienda_id = db.Column(db.Integer, db.ForeignKey('tienda.id'), nullable=False)
     factura_Productos = db.relationship('Factura', backref= 'factura_p', lazy = True)
 
@@ -90,6 +91,8 @@ class Productos(db.Model):
             "avatar": self.avatar,
             "stock": self.stock,
             "precio": self.precio,
+            "categoria":self.categoria,
+            "description":self.description,
         }  
      
 
