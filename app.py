@@ -4,7 +4,7 @@ from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_cors import CORS
 from models import db, Usuario, Tienda, Productos, Factura, Detallefactura 
-from flask_mail import Mail
+from flask_mail import Mail, Message
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token, get_jwt_identity)
 from flask_bcrypt import Bcrypt
@@ -23,10 +23,17 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'd
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'super-secret-key'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_DEBUG'] = True
+app.config['MAIL_USERNAME'] = 'jarb29@gmail.com'
+app.config['MAIL_PASSWORD'] = 'Amesti2020'
+
+
 JWTManager(app)
 CORS(app)
 bcrypt = Bcrypt(app)
-
 db.init_app(app)
 Migrate(app, db)
 manager = Manager(app)
@@ -37,7 +44,13 @@ manager.add_command("db", MigrateCommand)
 def allowed_file_images(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS_IMG
-
+ 
+def send_mail(subject, sender, recipients, message):
+    msg = Message(subject,
+                  sender=sender,
+                  recipients=[recipients])
+    msg.html = message
+    mail.send(msg)
 
 @app.route('/')
 def root():
@@ -115,6 +128,12 @@ def register():
     usua.telefono = telefono
     db.session.add(usua)
     db.session.commit()
+    html = render_template('email-registerCliente.html', user=usua)
+    send_mail("Registro", "jarb29@gmail.com", usua.email, html)
+
+
+
+
     access_token = create_access_token(identity=usua.nombre)
    
      
@@ -271,6 +290,12 @@ def registerTienda():
     usua.longitude = longitude
     db.session.add(usua)
     db.session.commit()
+    html = render_template('email-registerTienda.html', user=usua)
+    send_mail("Registro", "jarb29@gmail.com", usua.email, html)
+
+
+
+
     access_token = create_access_token(identity=usua.nombre)
      
     data = {
