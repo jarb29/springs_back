@@ -202,7 +202,7 @@ def producto():
 
 
 
-@app.route('/api/admin/<int:id>', methods=['GET', 'DELETE'])
+@app.route('/api/admin/<int:id>', methods=['GET', 'DELETE', 'PUT'])
 @jwt_required
 def productos(id):
     if request.method == 'GET':
@@ -216,6 +216,13 @@ def productos(id):
         db.session.commit()
 
         return jsonify({"msg": "Producto eliminado"}), 200
+
+    if request.method == 'PUT':
+        editProducto = Productos.query.filter_by(id=id).first()
+        db.session.update(editProducto)
+        db.session.commit()
+
+        return jsonify({"msg": "Producto editado"}), 200
 
 @app.route('/api/tienda/<int:id>', methods=['GET'])
 @jwt_required
