@@ -292,10 +292,7 @@ def registerTienda():
     db.session.commit()
     html = render_template('email-registerTienda.html', user=usua)
     send_mail("Registro", "jarb29@gmail.com", usua.email, html)
-
-
-
-
+    
     access_token = create_access_token(identity=usua.nombre)
      
     data = {
@@ -351,59 +348,31 @@ def protected():
 
 
 
-@app.route('/api/tienda/<int:id>'', methods=['POST'])
-def register():
+@app.route('/api/checkout/<int:id>', methods=['POST'])
+def checkout():
     if not request.is_json:
         return jsonify({"msg": "Missing JSON in request"}), 400
 
-    usuario = request.json.get('nombre', None)
-    clave = request.json.get('clave', None)
-    apellido = request.json.get('apellido', None)
-    email = request.json.get('email', None)
-    direccion = request.json.get('direccion', None)
-    telefono = request.json.get('telefono', None)
-
-
-    if not usuario:
-        return jsonify({"msg": "Falta el nombre"}), 400
-    if not apellido:
-        return jsonify({"msg": "Falta el apellido"}), 400
-    if not email:
-        return jsonify({"msg": "Falta el email"}), 400
-    usua = Usuario.query.filter_by(email = email).first()
-    if usua:
-        return jsonify({"msg": "Usuario existe por favor elegir diferente Email"}), 400
-    if not direccion:
-        return jsonify({"msg": "Falta la direccion"}), 400
-    if not telefono:
-        return jsonify({"msg": "Falta el telefono"}), 400
-    if not clave:
-        return jsonify({"msg": "Falta la clave"}), 400
+    ItemCompradoId= request.json.get('ItemCompradoId', None)
+    newStockproductoComprado = request.json.get('newStockproductoComprado', None)
+    id_tiendaSeleccionada = request.json.get('id_tiendaSeleccionada', None)
     
 
-    
+    usua = Producto.query.filter_by(tienda_id = id_tiendaSeleccionada, id = ItemCompradoId).first()
+
+
         
-    usua = Usuario()
-    usua.nombre = usuario
-    usua.clave = bcrypt.generate_password_hash(clave) 
-    usua.apellido = apellido
-    usua.email = email
-    usua.direccion = direccion
-    usua.telefono = telefono
+    usua = Producto()
+    usua.stock = newStockproductoComprado
     db.session.add(usua)
     db.session.commit()
+
     html = render_template('email-registerCliente.html', user=usua)
     send_mail("Registro", "jarb29@gmail.com", usua.email, html)
-
-
-
-
-    access_token = create_access_token(identity=usua.nombre)
    
      
     data = {
-        "access_token": access_token,
-        "Usuario": usua.serialize()
+         "Producto": usua.serialize()
     }
     return jsonify(data),  200
 
