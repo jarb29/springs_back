@@ -302,12 +302,13 @@ def registerTienda():
     usua = Tienda.query.filter_by(email = email).first()
     if usua:
         return jsonify({"msg": "Usuario existe por favor elegir un Email diferente"}), 400
+    if not clave:
+        return jsonify({"msg": "Falta la clave"}), 400
     if not latitude:
         return jsonify({"msg": "Falta la latitude de la Tienda"}), 400
     if not longitude:
         return jsonify({"msg": "Falta el longitud de la Tienda"}), 400
-    if not clave:
-        return jsonify({"msg": "Falta la clave"}), 400
+    
         
     usua = Tienda()
     usua.nombre = usuario
@@ -388,6 +389,7 @@ def checkout(id):
     usuario_id = request.json.get('usuario_id', None)
     totalFactura = request.json.get('totalFactura', None)
 
+    email = Usuario.query.filter_by(id = usuario_id).first().email
     productos = Productos.query.filter(Productos.id.in_(ItemCompradoId)).all()
 
     
@@ -401,7 +403,7 @@ def checkout(id):
 
 
 
-    factura_id = str(Factura.query.order_by(Factura.id.desc()).first())
+    factura_id = Factura.query.order_by(Factura.id.desc()).first().id
     print(factura_id)
     i=0
     for prod in productos:
@@ -421,6 +423,9 @@ def checkout(id):
         prod.stock = int(prod.stock) - int(CantidaProductoComprado[i])
         i=i+1
         db.session.commit()
+    
+    html = render_template('email-compraProductos.html', user=CantidaProductoComprado)
+    send_mail("Compra", "jarb29@gmail.com", email, html)
 
     datosProductos = Productos.query.filter_by(tienda_id = id).all()
     datosProductos = list(map(lambda datosProductos: datosProductos.serialize(), datosProductos))
