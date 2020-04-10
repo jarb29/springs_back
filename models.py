@@ -94,9 +94,6 @@ class Productos(db.Model):
             "categoria":self.categoria,
             "description":self.description,
         }  
-     
-
-
 
 
 class Factura(db.Model):
@@ -107,7 +104,7 @@ class Factura(db.Model):
     total = db.Column(db.String(100), nullable = False)
 
     def __repr__(self):
-        return f"Factura('{self.id}')"
+        return f"{self.id}"
 
     def serialize(self):
         return {
@@ -122,7 +119,7 @@ class Detallefactura(db.Model):
     __tablename__ = 'detallefactura'
     id = db.Column(db.Integer, primary_key=True)
     productos_comprados = db.Column(db.String(100), nullable = False)
-    factura_id = db.Column(db.Integer, db.ForeignKey('factura.id'))
+    factura_id = db.Column(db.String(100), db.ForeignKey('factura.id'))
     producto_id = db.Column(db.Integer, db.ForeignKey('productos.id'), nullable=False)
     precio = db.Column(db.String(100), nullable = False)
 
@@ -132,6 +129,10 @@ class Detallefactura(db.Model):
     def serialize(self):
         return {
             "id": self.id,
+            "productos_comprados": self.productos_comprados,
+            "factura_id": self.factura_id,
+            "producto_id": self.producto_id ,
+            "precio:": self.precio,
         }  
 
 

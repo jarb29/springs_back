@@ -348,33 +348,56 @@ def protected():
 
 
 
-@app.route('/api/checkout/<int:id>', methods=['POST'])
-def checkout():
+@app.route('/api/checkout/<int:id>', methods=['PUT'])
+def checkout(id):
     if not request.is_json:
         return jsonify({"msg": "Missing JSON in request"}), 400
 
-    ItemCompradoId= request.json.get('ItemCompradoId', None)
-    newStockproductoComprado = request.json.get('newStockproductoComprado', None)
-    id_tiendaSeleccionada = request.json.get('id_tiendaSeleccionada', None)
+    ItemCompradoId= request.json.get('ItemProductoCompradoId', None)
+    CantidaProductoComprado = request.json.get('CantidaProductoComprado', None)
+    precioProductoSeleccionado = request.json.get('precioProductoSeleccionado', None)
+    usuario_id = request.json.get('usuario_id', None)
+    totalFactura = request.json.get('totalFactura', None)
+
+    productos = Productos.query.filter(Productos.id.in_(ItemCompradoId)).all()
+
     
-
-    usua = Producto.query.filter_by(tienda_id = id_tiendaSeleccionada, id = ItemCompradoId).first()
-
-
-        
-    usua = Producto()
-    usua.stock = newStockproductoComprado
+ 
+    usua = Factura()
+    usua.usuario_factura_id = usuario_id
+    usua.total = totalFactura
     db.session.add(usua)
     db.session.commit()
+       
 
-    html = render_template('email-registerCliente.html', user=usua)
-    send_mail("Registro", "jarb29@gmail.com", usua.email, html)
-   
+
+
+    factura_id = str(Factura.query.order_by(Factura.id.desc()).first())
+    print(factura_id)
+    i=0
+    for prod in productos:
+        usua = Detallefactura()
+        usua.productos_comprados = int(CantidaProductoComprado[i])
+        usua.factura_id= factura_id
+        usua.producto_id = int(ItemCompradoId[i])
+        usua.precio = int(precioProductoSeleccionado[i])
+        db.session.add(usua)
+        db.session.commit()
+        i=i+1
+
+
+    i=0
+    for prod in productos:
      
-    data = {
-         "Producto": usua.serialize()
-    }
-    return jsonify(data),  200
+        prod.stock = int(prod.stock) - int(CantidaProductoComprado[i])
+        i=i+1
+        db.session.commit()
+
+    datosProductos = Productos.query.filter_by(tienda_id = id).all()
+    datosProductos = list(map(lambda datosProductos: datosProductos.serialize(), datosProductos))
+    
+    
+    return jsonify(datosProductos), 200
 
 
 
