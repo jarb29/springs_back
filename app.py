@@ -202,7 +202,7 @@ def producto():
 
 
 
-@app.route('/api/admin/<int:id>', methods=['GET', 'DELETE', 'PUT'])
+@app.route('/api/admin/<int:id>', methods=['GET', 'DELETE'])
 @jwt_required
 def productos(id):
     if request.method == 'GET':
@@ -217,12 +217,34 @@ def productos(id):
 
         return jsonify({"msg": "Producto eliminado"}), 200
 
-    if request.method == 'PUT':
-        editProducto = Productos.query.filter_by(id=id).first()
-        db.session.update(editProducto)
-        db.session.commit()
 
-        return jsonify({"msg": "Producto editado"}), 200
+@app.route('/api/editar/producto/<int:id>', methods=['PUT'])
+@jwt_required
+def editarProducto(id):
+    editProducto = Productos.query.get(id)
+
+    nombre = request.form.get('nombre', None)
+    description = request.form.get('descripcion', None)
+    stock = request.form.get('stock', None)
+    precio = request.form.get('precio', None)
+    tienda_id = request.form.get('tienda_id', None)
+    categoria = request.form.get('categoria', None)
+    
+
+    if nombre != '':
+        editProducto.nombre = nombre
+    elif description !='':
+        editProducto.description = description
+    elif stock !='':
+        editProducto.stock = stock
+    elif precio != '':
+        editProducto.precio = precio 
+
+    db.session.commit()
+
+    return ({'msg': 'Producto actualizado'})  
+
+
 
 @app.route('/api/tienda/<int:id>', methods=['GET'])
 @jwt_required
