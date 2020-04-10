@@ -233,11 +233,11 @@ def editarProducto(id):
 
     if nombre != '':
         editProducto.nombre = nombre
-    elif description !='':
+    if description !='':
         editProducto.description = description
-    elif stock !='':
+    if stock !='':
         editProducto.stock = stock
-    elif precio != '':
+    if precio != '':
         editProducto.precio = precio 
 
     db.session.commit()
