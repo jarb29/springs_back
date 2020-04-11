@@ -388,7 +388,11 @@ def checkout(id):
     precioProductoSeleccionado = request.json.get('precioProductoSeleccionado', None)
     usuario_id = request.json.get('usuario_id', None)
     totalFactura = request.json.get('totalFactura', None)
+    totalProductosComprados = request.json.get('totalProductosComprados', None)
+    usuarioActual = request.json.get('usuarioActual', None)
+    emailTiendaSeleccionada = request.json.get('emailTiendaSeleccionada', None)
 
+ 
     email = Usuario.query.filter_by(id = usuario_id).first().email
     productos = Productos.query.filter(Productos.id.in_(ItemCompradoId)).all()
 
@@ -424,8 +428,11 @@ def checkout(id):
         i=i+1
         db.session.commit()
     
-    html = render_template('email-compraProductos.html', user=CantidaProductoComprado)
+    html = render_template('email-compraProductos.html', users=totalProductosComprados)
     send_mail("Compra", "jarb29@gmail.com", email, html)
+    html = render_template('email-ProductosComprados.html', usuarioactual = usuarioActual, users=totalProductosComprados)
+    send_mail("Productos comprados", "jarb29@gmail.com", emailTiendaSeleccionada, html)
+    
 
     datosProductos = Productos.query.filter_by(tienda_id = id).all()
     datosProductos = list(map(lambda datosProductos: datosProductos.serialize(), datosProductos))
