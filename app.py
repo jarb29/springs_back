@@ -198,7 +198,7 @@ def producto():
     data = {
         "Producto": usua.serialize()
     }
-    return jsonify(data), 200
+    return jsonify({'msg': 'Producto agregado exitosamente'}), 200
 
 
 
