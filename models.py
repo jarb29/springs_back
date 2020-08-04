@@ -3,15 +3,23 @@ import sys
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+from flask_migrate import Migrate, MigrateCommand
 from sqlalchemy import create_engine
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
 from datetime import datetime
+from manager import app
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql:jarb29.mysql.pythonanywhere-services.com'
+
+SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
+    username="Jarb",
+    password="Alexander29",
+    hostname="Jarb.mysql.pythonanywhere-services.com",
+    databasename="Jarb$spring",
+)
+
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 
 class Payments(db.Model):
