@@ -11,7 +11,7 @@ Activate virtualenv with pipenv
 ### Step 3:
 With virtualenv activated install the next libraries.
 ​
-    $ pipenv install flask flask-cors flask-migrate flask-sqlalchemy flask-jwt-extended flask-script flask-bcrypt flask-mail
+    $ pipenv install flask flask-cors flask-migrate flask-sqlalchemy flask-jwt-extended flask-script flask-bcrypt flask-mail Flask-Limiter
 ​
 The documentation of libraries:
 ​

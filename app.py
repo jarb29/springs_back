@@ -9,6 +9,8 @@ from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token, get_jwt_identity)
 from flask_bcrypt import Bcrypt
 from werkzeug.utils import secure_filename
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 import requests
 
 
@@ -16,13 +18,17 @@ import requests
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 app.config['DEBUG'] = True
 app.config['ENV'] = 'development'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'dev.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+limiter = Limiter(
+    app,
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"]
+)
 
 
 
@@ -43,6 +49,7 @@ def root():
 
 
 @app.route('/api/payments', methods=['POST'])
+@limiter.limit("10/second")
 def created():
     if not request.is_json:
         return jsonify({"msg": "Bad request"}), 400
@@ -54,7 +61,7 @@ def created():
         lastName = request.json.get('lastName', None)
         description = request.json.get('description', None)
         serviceHour = request.json.get('serviceHour', None)
-        amountOfService = request.json.get('amountOfService', None)
+        amountOfService = serviceHour * valor_uf 
         dayAmmountUf = valor_uf 
 
         if not name:
@@ -83,6 +90,7 @@ def created():
 
 
 @app.route('/api/payments/<int:id>', methods=['GET', 'DELETE'])
+@limiter.limit("10/second")
 def get_products(id):
     if not request.is_json:
         return jsonify({"msg": "Bad request"}), 400
@@ -105,6 +113,7 @@ def get_products(id):
 
 
 @app.route('/api/allPayments', methods=['GET'])
+@limiter.limit("10/second")
 def get_all():
     listaPayments = Payments.query.all()
     if not listaPayments:
@@ -114,6 +123,7 @@ def get_all():
 
 
 @app.route('/api/payments/<int:id>', methods=['PUT'])
+@limiter.limit("10/second")
 def editarPayment(id):
     if not request.is_json:
         return jsonify({"msg": "Bad request"}), 400
