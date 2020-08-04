@@ -12,6 +12,7 @@ from werkzeug.utils import secure_filename
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import requests
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://jarb29:Alexander29@servidor/jarb29.mysql.pythonanywhere-services.com'
 
 
 
