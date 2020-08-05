@@ -4,27 +4,26 @@ from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_cors import CORS
 from models import db, Payments
+from flask_mail import Mail, Message
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token, get_jwt_identity)
+from flask_bcrypt import Bcrypt
 from werkzeug.utils import secure_filename
-from flask_sqlalchemy import SQLAlchemy
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+import requests
 
+
+
+
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
-app.config['DEBUG'] = True
-SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
-    username="Jarb",
-    password="Alexander29",
-    hostname="Jarb.mysql.pythonanywhere-services.com",
-    databasename="Jarb$spring",
-)
-
-app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
-app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.url_map.strict_slashes = False
-app.config['ENV'] = 'production'
-
+app.config['DEBUG'] = True
+app.config['ENV'] = 'development'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'dev.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 limiter = Limiter(
     app,
     key_func=get_remote_address,
@@ -35,9 +34,11 @@ limiter = Limiter(
 
 JWTManager(app)
 CORS(app)
+bcrypt = Bcrypt(app)
 db.init_app(app)
 Migrate(app, db)
 manager = Manager(app)
+mail = Mail(app)
 manager.add_command("db", MigrateCommand)
 
 
