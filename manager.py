@@ -4,11 +4,6 @@ from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_cors import CORS
 from models import db, Payments
-from flask_mail import Mail, Message
-from flask_jwt_extended import (
-    JWTManager, jwt_required, create_access_token, get_jwt_identity)
-from flask_bcrypt import Bcrypt
-from werkzeug.utils import secure_filename
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import requests
@@ -32,15 +27,14 @@ limiter = Limiter(
 
 
 
-JWTManager(app)
 CORS(app)
-bcrypt = Bcrypt(app)
 db.init_app(app)
 Migrate(app, db)
 manager = Manager(app)
-mail = Mail(app)
 manager.add_command("db", MigrateCommand)
 
+r = requests.get("https://mindicador.cl/api").json()
+valor_uf = r['uf']['valor']
 
 
 @app.route('/')
@@ -54,14 +48,11 @@ def created():
     if not request.is_json:
         return jsonify({"msg": "Bad request"}), 400
     if request.method == 'POST':
-        r = requests.get("https://mindicador.cl/api").json()
-        valor_uf = r['uf']['valor']
-        
         name = request.json.get('name', None)
         lastName = request.json.get('lastName', None)
         description = request.json.get('description', None)
         serviceHour = request.json.get('serviceHour', None)
-        amountOfService = serviceHour * valor_uf 
+        amountOfService = float(serviceHour) * float(valor_uf) 
         dayAmmountUf = valor_uf 
 
         if not name:
@@ -133,8 +124,8 @@ def editarPayment(id):
     lastName = request.json.get('lastName', None)
     description = request.json.get('description', None)
     serviceHour = request.json.get('serviceHour', None)
-    amountOfService = request.json.get('amountOfService', None)
-    dayAmmountUf = request.json.get('dayAmmountUf', None)
+    amountOfService = float(serviceHour) * float(valor_uf) 
+    dayAmmountUf = valor_uf 
     
 
     if name != '':
@@ -145,8 +136,8 @@ def editarPayment(id):
         editPayment.lastName = lastName 
     if serviceHour !='':
         editPayment.serviceHour = serviceHour
-    if amountOfService != '':
         editPayment.amountOfService = amountOfService
+        editPayment.dayAmmountUf  = dayAmmountUf 
     db.session.commit()
     return jsonify({"msg": "Payment update succesfuly"}), 200
 
