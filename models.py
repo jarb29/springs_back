@@ -6,13 +6,15 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
+from flask_migrate import Migrate, MigrateCommand
 from datetime import datetime
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql:Jarb.mysql.pythonanywhere-services.com'
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
-
+########## Creado la tabla payments##########
 class Payments(db.Model):
     __tablename__ = 'payments'
     id = db.Column(db.Integer, primary_key = True)
@@ -37,4 +39,4 @@ class Payments(db.Model):
             "amountOfService":self.amountOfService,
             "dateAmmountUF":self.dateAmmountUF,
             "date":self.date,
-        }  
+        }
